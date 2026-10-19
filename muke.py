@@ -1,29 +1,3 @@
-
-import requests as preq
-HB_API_KEY = "hb_cdfc571755daac8231b0c1812ec4"
-
-def make_hb_session():
-    headers = {"x-api-key": HB_API_KEY, "Content-Type": "application/json"}
-    try:
-        res = preq.post("https://api.hyperbrowser.ai/api/session", headers=headers, json={}, timeout=30)
-        if res.status_code == 200:
-            data = res.json()
-            print(f"[HB] Sesi Hyperbrowser US Aktif! ID: {data.get('id')}")
-            return data.get("id")
-    except Exception as e:
-        print(f"[HB] Gagal buat sesi: {e}")
-    return None
-
-def stop_hb_session(session_id):
-    if not session_id:
-        return
-    headers = {"x-api-key": HB_API_KEY, "Content-Type": "application/json"}
-    try:
-        preq.put(f"https://api.hyperbrowser.ai/api/session/{session_id}/stop", headers=headers, timeout=30)
-        print("[HB] Sesi Hyperbrowser dihentikan.")
-    except Exception:
-        pass
-
 import base64
 import hashlib
 import json
@@ -278,7 +252,6 @@ def candak_app(sesi, path, perujuk=DASAR_MUSE + '/'):
     return pamundut_app(sesi, 'GET', path, None, perujuk)
 
 def mimitian_alur():
-    hb_id = make_hb_session()
     bereskeun_profil_browser()
     api = sesi_api_anyar()
     proksi_samaran = samarkeun_proksi(KONF.get('proxy') or '')
@@ -358,74 +331,44 @@ def candak_domain_surel(cobaan=3):
         time.sleep(2 * (a + 1))
     gagal('email', f'get_public_config gagal {cobaan}x: {ngaran_tukang}')
 
-
-
-class TempMail:
-    def __init__(self):
-        self.base_url = "https://box.celana-ar-store.my.id"
-        self.email = None
-        self.domain = "celana-ar-store.my.id"
-
-    def generate_email(self):
-        import random, string
-        local = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
-        self.email = f"{local}@{self.domain}"
-        print(f"[email] Temp Email Custom Dibuat: {self.email}")
-        return self.email
-
-    def wait_for_otp(self, timeout=150, interval=5):
-        print(f"[otp] Menunggu email masuk ke {self.email} (Maks {timeout} detik)...")
-        start_time = time.time()
-        seen_ids = set()
-        while time.time() - start_time < timeout:
-            try:
-                res = preq.get(f"{self.base_url}/api/inbox", params={"address": self.email}, timeout=10)
-                if res.status_code == 200:
-                    emails = res.json().get("emails", [])
-                    for mail in emails:
-                        msg_id = mail.get("id")
-                        if msg_id not in seen_ids:
-                            seen_ids.add(msg_id)
-                            m_res = preq.get(f"{self.base_url}/api/read", params={"address": self.email, "id": msg_id}, timeout=10)
-                            if m_res.status_code == 200:
-                                data = m_res.json()
-                                body = data.get("body", "")
-                                subject = data.get("subject", "")
-                                combined = f"{subject} {body}"
-                                otp_match = re.search(r'\b(\d{6})\b', combined)
-                                if otp_match:
-                                    otp = otp_match.group(1)
-                                    print(f"[otp] Kode OTP Diterima: {otp}")
-                                    return otp
-            except Exception as e:
-                pass
-            time.sleep(interval)
-        return None
 def surel_sakedap_anyar():
-    global _GLOBAL_MAIL_OBJ
-    _GLOBAL_MAIL_OBJ = TempMail()
-    surel = _GLOBAL_MAIL_OBJ.generate_email()
-    if not surel:
-        print("[-] Gagal generate email")
-        sys.exit(1)
+    daptar_domain = candak_domain_surel()
+    lokal = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+    surel = f'{lokal}@{random.choice(daptar_domain)}'
+    catet('email', f'temp email: {surel}')
     return surel
 
-def antos_otp(surel, timeout=150, id_diabaikan=frozenset()):
-    global _GLOBAL_MAIL_OBJ
-    if not _GLOBAL_MAIL_OBJ:
-        print("[-] TempMail belum diinisialisasi")
-        sys.exit(1)
-    otp = _GLOBAL_MAIL_OBJ.wait_for_otp(timeout=timeout, interval=5)
-    if not otp:
-        print("[-] OTP tidak datang")
-        sys.exit(1)
-    return otp
-
 def candak_kotak(surel):
-    return []
+    s = _sesi_surel()
+    r = s.get(API_JESTCO, params={'to': surel}, timeout=30)
+    try:
+        data = r.json()
+    except ValueError:
+        return []
+    return data if isinstance(data, list) else data.get('messages', [])
 
 def cokot_otp(daptar_pesen):
+    for m in daptar_pesen:
+        awak = m.get('body') or m.get('text') or ''
+        subj = m.get('subject') or ''
+        teks = awak + ' ' + subj
+        for pola in ('Confirmation code (\\d{6})', 'Use code (\\d{6})', '\\b(\\d{6})\\b.{0,40}(log in|masuk)', 'code is (\\d{6})', 'kode (\\d{6})'):
+            bulan = re.search(pola, teks, re.IGNORECASE)
+            if bulan:
+                return bulan.group(1)
     return None
+
+def antos_otp(surel, timeout=BATAS_ANTOS_OTP, id_diabaikan=frozenset()):
+    catet('otp', f'menunggu email OTP ({timeout}s) ...')
+    tenggat = time.time() + timeout
+    while time.time() < tenggat:
+        pesen2 = [m for m in candak_kotak(surel) if str(m.get('id')) not in id_diabaikan]
+        otp = cokot_otp(pesen2)
+        if otp:
+            catet('otp', 'kode OTP diterima')
+            return otp
+        time.sleep(SELANG_ANTOS_OTP)
+    gagal('otp', 'OTP tidak datang')
 
 def merek_kartu(nomer):
     
@@ -565,8 +508,10 @@ def _asup_biasa(api, csrf, surel):
     kirim_otp(api, csrf, surel)
     if OTP_PANYADIA is not None:
         otp = OTP_PANYADIA(surel)
-    else:
+    elif '@' in surel and surel.split('@')[1] in _domain_jestco():
         otp = antos_otp(surel, id_diabaikan=katempo)
+    else:
+        otp = input('OTP: ').strip()
     data = pasti_otp(api, csrf, otp)
     sesi = data.get('auth_meta_session') or {}
     if sesi.get('frl_access_token'):
@@ -1642,12 +1587,16 @@ NAGARA_BIN = {
 }
 
 def teangan_nagara_ti_bin(nomer):
-    return None
+    
+    return NAGARA_BIN.get(re.sub(r'\D', '', nomer or '')[:6])
 
 def pilih_nagara(nomer=None):
     
 
-    
+    otomatis = teangan_nagara_ti_bin(nomer) if nomer else None
+    if otomatis:
+        print(warna(f"   🔍 BIN {re.sub(r'\\D', '', nomer)[:6]} terdeteksi: "
+                  f"{RESMI.get(otomatis, otomatis)} ({otomatis})", "c"))
     baku = otomatis or 'US'
     while True:
         atah = tanya(f"negara billing [Enter={baku} | ketik nama/kode | 'list']",

@@ -1,2 +1,2 @@
-# muse
-muse
+# soul.md
+soul
