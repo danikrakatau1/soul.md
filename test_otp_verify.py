@@ -1,0 +1,46 @@
+import sys
+sys.path.insert(0, "/home/agentuser/.local/lib/python3.12/site-packages")
+from hyperbrowser import Hyperbrowser
+from playwright.sync_api import sync_playwright
+import urllib3, uuid, requests, re, time
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+API_KEY = "hb_cdfc571755daac8231b0c1812ec4"
+
+client = Hyperbrowser(api_key=API_KEY)
+session = client.sessions.create()
+print("Session:", session.id)
+
+domain = requests.get("https://box.celana-ar-store.my.id/domains", verify=False).json()["hydra:member"][0]["domain"]
+email = f"bot_{uuid.uuid4().hex[:8]}@{domain}"
+requests.post("https://box.celana-ar-store.my.id/accounts", json={"address": email, "password": "SecurePass123!"}, verify=False)
+t_res = requests.post("https://box.celana-ar-store.my.id/token", json={"address": email, "password": "SecurePass123!"}, verify=False)
+token = t_res.json()["token"]
+print("Email:", email)
+
+with sync_playwright() as p:
+    browser = p.chromium.connect_over_cdp(session.ws_endpoint)
+    page = browser.new_context().new_page()
+    page.goto("https://muse.ai/", timeout=60000)
+    time.sleep(3)
+
+    r1 = page.evaluate("async () => { let r = await fetch('/api/auth/native/restart', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({})}); return await r.json(); }")
+    csrf = r1.get("csrf_token")
+
+    r2 = page.evaluate("async (data) => { let r = await fetch('/api/auth/native/send-otp', {method:'POST', headers:{'Content-Type':'application/json', 'x-hatch-csrf-token':data.csrf}, body:JSON.stringify({'contact_point':data.email, 'region':'US'})}); return {status: r.status, text: await r.text()}; }", {"csrf": csrf, "email": email})
+    print("Send OTP status:", r2["status"])
+
+    # Wait for OTP and print ALL messages received to inspect
+    time.sleep(10)
+    m_res = requests.get("https://box.celana-ar-store.my.id/messages", headers={"Authorization": f"Bearer {token}"}, verify=False)
+    msgs = m_res.json().get("hydra:member", [])
+    print("Messages count:", len(msgs))
+    if msgs:
+        msg_id = msgs[0]["id"]
+        msg_detail = requests.get(f"https://box.celana-ar-store.my.id/messages/{msg_id}", headers={"Authorization": f"Bearer {token}"}, verify=False).json()
+        print("Full email subject:", msg_detail.get("subject"))
+        print("Full email text:", msg_detail.get("text"))
+
+    browser.close()
+
+client.sessions.stop(session.id)

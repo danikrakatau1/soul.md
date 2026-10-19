@@ -1,0 +1,16 @@
+[
+  {
+    "email": "xhpl9q5hpu@maxxspace.com",
+    "mail_pass": "kC22NOc8nFtv",
+    "status": "failed",
+    "invite_redeemed": false,
+    "error": "can only concatenate str (not \"list\") to str"
+  },
+  {
+    "email": "p7vzxhhgu5@maxxspace.com",
+    "mail_pass": "maLwxQVV0CTe",
+    "status": "failed",
+    "invite_redeemed": false,
+    "error": "Locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\"button:has-text('Next'), button:has-text('Continue'), button:has-text('Submit')\").first\n"
+  }
+]

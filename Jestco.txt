@@ -1,0 +1,36 @@
+bot_cd652ec2@maxxspace.com:SecurePass123! # HB Complete (Fitri Wijaya)
+bot_020a9c71@maxxspace.com:SecurePass123! # Rani Kusuma
+bot_01dd443f@maxxspace.com:SecurePass123! # Wulan Santoso
+bot_3c155ad7@maxxspace.com:SecurePass123! # Anya Santoso
+bot_bd608eba@maxxspace.com:SecurePass123! # Wulan Santoso
+bot_2e810431@maxxspace.com:SecurePass123! # Wulan Nugroho
+bot_aa1eb9e7@maxxspace.com:SecurePass123! # Fitri Pratama
+bot_455f042e@maxxspace.com:SecurePass123! # Fitri Kusuma
+bot_b5aefde9@maxxspace.com:SecurePass123! # Putri Juanda
+bot_f43109ef@maxxspace.com:SecurePass123! # Wulan Juanda
+bot_040ed8e2@maxxspace.com:SecurePass123! # Nadia Nugroho
+bot_8379bf73@maxxspace.com:SecurePass123! # Miauru Juanda | Reff: FO3DHT
+bot_c5bfeae1@maxxspace.com:SecurePass123! # Putri Santoso | Reff: FO3DHT
+bot_1b19d23c@maxxspace.com:SecurePass123! # Rani Pratama | Reff: FO3DHT
+bot_1d543f55@maxxspace.com:SecurePass123! # Anya Hidayat | Reff: FO3DHT
+bot_08232ea8@maxxspace.com:SecurePass123! # Sinta Saputra | Reff: FO3DHT
+bot_c6a82fb0@maxxspace.com:SecurePass123! # Anya Pratama | Reff: FO3DHT
+bot_cb46e2bc@maxxspace.com:SecurePass123! # Miauru Santoso | Reff: FO3DHT
+bot_41332267@maxxspace.com:SecurePass123! # Intan Saputra | Reff: FO3DHT
+bot_dcb2d54a@maxxspace.com:SecurePass123! # Anya Santoso | Reff: FO3DHT
+bot_c96845a1@maxxspace.com:SecurePass123! # Miauru Hidayat | Reff: FO3DHT
+bot_5810be5a@maxxspace.com:SecurePass123! # Miauru Saputra | Reff: FO3DHT
+bot_65806e83@maxxspace.com:SecurePass123! # Fitri Nugroho | Reff: FO3DHT
+bot_1cdecc0a@maxxspace.com:SecurePass123! # Intan Saputra | Reff: FO3DHT
+bot_ef6db6d1@maxxspace.com:SecurePass123! # Rani Kusuma | Reff: FO3DHT
+bot_20885cc7@maxxspace.com:SecurePass123! # Intan Kusuma | Reff: FO3DHT
+bot_a050c2a1@maxxspace.com:SecurePass123! # Rani Saputra | Reff: FO3DHT
+bot_08912f35@maxxspace.com:SecurePass123! # Miauru Nugroho | Reff: FO3DHT
+bot_a4db4186@maxxspace.com:SecurePass123! # Anya Pratama | Reff: FO3DHT
+bot_f8999c40@maxxspace.com:SecurePass123! # Miauru Saputra | Reff: FO3DHT
+bot_8923e68f@maxxspace.com:SecurePass123! # Sinta Hidayat | Reff: FO3DHT
+bot_18da37ad@maxxspace.com:Z0Yv531IrAdf # Gagal
+bot_3aad458f@maxxspace.com:EYuEt6Jqgn4D # Gagal
+bot_4bb89e02@maxxspace.com:d3z8U05KikVt # Gagal
+bot_c29d4f87@maxxspace.com:7Dovdc1fNfSE # Gagal: dibatalkan user
+v8n0hudp@celana-ar-store.my.id:R0bcTQfWpNrG # Gagal

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Format & Luhn Syntax Validator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl">
+        <h1 class="text-2xl font-bold mb-2 text-cyan-400">Card Syntax & Luhn Validator</h1>
+        <p class="text-slate-400 text-sm mb-6">Validate card format (BIN, Expiry, CVV) and Luhn algorithm syntax locally.</p>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Card Input (Format: CC|MM|YY|CVV or single number)</label>
+            <textarea id="cardInput" rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-slate-200 focus:outline-none focus:border-cyan-500 font-mono text-sm" placeholder="411111|12|28|123"></textarea>
+        </div>
+        
+        <button onclick="validateCards()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold py-3 rounded-lg transition duration-200">Validate Syntax</button>
+        
+        <div class="mt-6">
+            <h2 class="text-lg font-semibold mb-2">Results:</h2>
+            <div id="results" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs h-48 overflow-y-auto space-y-2 text-slate-300">
+                <span class="text-slate-500">Awaiting input...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function luhnCheck(numStr) {
+            let arr = numStr.split('').reverse().map(x => parseInt(x, 10));
+            let sum = arr.reduce((acc, val, idx) => {
+                if (idx % 2 === 1) {
+                    val *= 2;
+                    if (val > 9) val -= 9;
+                }
+                return acc + val;
+            }, 0);
+            return sum % 10 === 0;
+        }
+
+        function validateCards() {
+            const input = document.getElementById('cardInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            if (!input) {
+                resultsDiv.innerHTML = '<span class="text-red-400">Please enter card data.</span>';
+                return;
+            }
+
+            const lines = input.split('\n');
+            let count = 0;
+
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                count++;
+                const parts = line.split(/[\s\|]+/);
+                const rawNum = parts[0].replace(/\D/g, '');
+                
+                if (rawNum.length < 13 || rawNum.length > 19) {
+                    resultsDiv.innerHTML += `<div class="text-red-400">[#${count}] Invalid length (${rawNum}): ${line}</div>`;
+                    return;
+                }
+
+                const isValid = luhnCheck(rawNum);
+                const brand = rawNum.startsWith('4') ? 'Visa' : rawNum.startsWith('5') ? 'Mastercard' : rawNum.startsWith('3') ? 'Amex' : 'Unknown';
+                
+                if (isValid) {
+                    resultsDiv.innerHTML += `<div class="text-emerald-400">[#${count}] VALID SYNTAX (${brand}): ${rawNum} — Luhn Check Passed</div>`;
+                } else {
+                    resultsDiv.innerHTML += `<div class="text-amber-400">[#${count}] INVALID SYNTAX (${brand}): ${rawNum} — Luhn Check Failed</div>`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
